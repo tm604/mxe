@@ -3,8 +3,8 @@
 
 PKG             := sdl2
 $(PKG)_IGNORE   :=
-$(PKG)_VERSION  := 2.0.0
-$(PKG)_CHECKSUM := a907eb5203abad6649c1eae0120d96c0a1931350
+$(PKG)_VERSION  := 2.0.1
+$(PKG)_CHECKSUM := e40051311b648e4e60ed1683f62a948d93a0a49f
 $(PKG)_SUBDIR   := SDL2-$($(PKG)_VERSION)
 $(PKG)_FILE     := SDL2-$($(PKG)_VERSION).tar.gz
 $(PKG)_URL      := http://www.libsdl.org/release/$($(PKG)_FILE)
@@ -18,7 +18,7 @@ endef
 
 define $(PKG)_BUILD
     $(SED) -i 's,-mwindows,-lwinmm -mwindows,' '$(1)/configure'
-    cd '$(1)' && ./configure \
+    cd '$(1)' && aclocal -I acinclude && autoconf && ./configure \
         --host='$(TARGET)' \
         --disable-shared \
         --prefix='$(PREFIX)/$(TARGET)' \
@@ -31,5 +31,3 @@ define $(PKG)_BUILD
     $(MAKE) -C '$(1)' -j 1 install bin_PROGRAMS= sbin_PROGRAMS= noinst_PROGRAMS=
     ln -sf '$(PREFIX)/$(TARGET)/bin/sdl2-config' '$(PREFIX)/bin/$(TARGET)-sdl2-config'
 endef
-
-$(PKG)_BUILD_i686-pc-mingw32 =

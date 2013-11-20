@@ -3,8 +3,8 @@
 
 PKG             := armadillo
 $(PKG)_IGNORE   :=
-$(PKG)_VERSION  := 3.910.0
-$(PKG)_CHECKSUM := 5a8ebdb612999ad0bbea7d6e7467a864703e3137
+$(PKG)_VERSION  := 3.920.2
+$(PKG)_CHECKSUM := c03a99b203a7f12a95e893ae398fab96d22485aa
 $(PKG)_SUBDIR   := $(PKG)-$($(PKG)_VERSION)
 $(PKG)_FILE     := $(PKG)-$($(PKG)_VERSION).tar.gz
 $(PKG)_URL      := http://$(SOURCEFORGE_MIRROR)/project/arma/$($(PKG)_FILE)
