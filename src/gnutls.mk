@@ -2,12 +2,12 @@
 # See index.html for further information.
 
 PKG             := gnutls
-$(PKG)_VERSION  := 3.2.6
-$(PKG)_CHECKSUM := eb5a404d297e8ee2f344bcd9cdeea86fe8977287
+$(PKG)_VERSION  := 3.2.12
+$(PKG)_CHECKSUM := 5ad26522ec18d6b54a17ff8d1d5b69bf2cd5c7ce
 $(PKG)_SUBDIR   := gnutls-$($(PKG)_VERSION)
-$(PKG)_FILE     := gnutls-$($(PKG)_VERSION).tar.xz
+$(PKG)_FILE     := gnutls-$($(PKG)_VERSION).1.tar.xz
 $(PKG)_URL      := ftp://ftp.gnutls.org/gcrypt/gnutls/v3.2//$($(PKG)_FILE)
-$(PKG)_DEPS     := gcc gettext nettle pcre zlib
+$(PKG)_DEPS     := gcc gettext gmp nettle pcre zlib
 
 define $(PKG)_UPDATE
     $(WGET) -q -O- ftp://ftp.gnutls.org/gcrypt/gnutls/v3.2/ | \
@@ -26,15 +26,12 @@ define $(PKG)_BUILD
     # AI_ADDRCONFIG referenced by src/serv.c but not provided by mingw.
     # Value taken from http://msdn.microsoft.com/en-us/library/windows/desktop/ms737530%28v=vs.85%29.aspx
     cd '$(1)' && ./configure \
-        --host='$(TARGET)' \
-        --build="`config.guess`" \
-        --enable-static \
-        --disable-shared \
-        --prefix='$(PREFIX)/$(TARGET)' \
+        $(MXE_CONFIGURE_OPTS) \
         --disable-rpath \
         --disable-nls \
         --disable-guile \
         --disable-doc \
+        --enable-local-libopts \
         --with-included-libtasn1 \
         --with-libregex='$(PREFIX)/$(TARGET)' \
         --with-regex-header=pcreposix.h \

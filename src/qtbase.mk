@@ -3,11 +3,11 @@
 
 PKG             := qtbase
 $(PKG)_IGNORE   :=
-$(PKG)_VERSION  := 5.2.0-rc1
-$(PKG)_CHECKSUM := 2577676eb37cec78d6d0864c094c7c8bb90a581e
+$(PKG)_VERSION  := 5.2.1
+$(PKG)_CHECKSUM := 32cfec62138a478361711cb5f6c8d1c60a3d8c08
 $(PKG)_SUBDIR   := $(PKG)-opensource-src-$($(PKG)_VERSION)
 $(PKG)_FILE     := $(PKG)-opensource-src-$($(PKG)_VERSION).tar.xz
-$(PKG)_URL      := http://download.qt-project.org/development_releases/qt/5.2/$($(PKG)_VERSION)/submodules/$($(PKG)_FILE)
+$(PKG)_URL      := http://download.qt-project.org/official_releases/qt/5.2/$($(PKG)_VERSION)/submodules/$($(PKG)_FILE)
 $(PKG)_DEPS     := gcc postgresql freetds openssl zlib libpng jpeg sqlite pcre fontconfig freetype dbus icu4c
 
 define $(PKG)_UPDATE
@@ -38,6 +38,7 @@ define $(PKG)_BUILD
             -accessibility \
             -nomake examples \
             -nomake tests \
+            -no-sql-mysql \
             -qt-sql-sqlite \
             -qt-sql-odbc \
             -qt-sql-psql \
@@ -56,14 +57,12 @@ define $(PKG)_BUILD
     $(MAKE) -C '$(1)' -j '$(JOBS)' QMAKE="$(1)/bin/qmake CONFIG-='debug debug_and_release'"
     rm -rf '$(PREFIX)/$(TARGET)/qt5'
     $(MAKE) -C '$(1)' -j 1 install
+    ln -sf '$(PREFIX)/$(TARGET)/qt5/bin/qmake' '$(PREFIX)/bin/$(TARGET)'-qmake-qt5
 
     mkdir            '$(1)/test-qt'
     cd               '$(1)/test-qt' && '$(PREFIX)/$(TARGET)/qt5/bin/qmake' '$(PWD)/src/qt-test.pro'
     $(MAKE)       -C '$(1)/test-qt' -j '$(JOBS)'
     $(INSTALL) -m755 '$(1)/test-qt/release/test-qt5.exe' '$(PREFIX)/$(TARGET)/bin/'
-
-    # copy pkg-config files to standard directory
-    cp '$(PREFIX)/$(TARGET)'/qt5/lib/pkgconfig/* '$(PREFIX)/$(TARGET)'/lib/pkgconfig/
 
     # build test the manual way
     mkdir '$(1)/test-$(PKG)-pkgconfig'
@@ -73,4 +72,15 @@ define $(PKG)_BUILD
         '$(TOP_DIR)/src/qt-test.cpp' -o '$(PREFIX)/$(TARGET)/bin/test-$(PKG)-pkgconfig.exe' \
         -I'$(1)/test-$(PKG)-pkgconfig' \
         `'$(TARGET)-pkg-config' Qt5Widgets --cflags --libs`
+
+    # batch file to run test programs
+    (printf 'set PATH=..\\lib;..\\qt5\\bin;..\\qt5\\lib;%%PATH%%\r\n'; \
+     printf 'set QT_QPA_PLATFORM_PLUGIN_PATH=..\\qt5\\plugins\r\n'; \
+     printf 'test-qt5.exe\r\n'; \
+     printf 'test-qtbase-pkgconfig.exe\r\n';) \
+     > '$(PREFIX)/$(TARGET)/bin/test-qt5.bat'
 endef
+
+$(PKG)_BUILD_SHARED = $(subst -static ,-shared ,\
+                      $(subst -qt-sql-,-plugin-sql-,\
+                      $($(PKG)_BUILD)))

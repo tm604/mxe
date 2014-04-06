@@ -3,8 +3,8 @@
 
 PKG             := mpc
 $(PKG)_IGNORE   :=
-$(PKG)_VERSION  := 1.0.1
-$(PKG)_CHECKSUM := 8c7e19ad0dd9b3b5cc652273403423d6cf0c5edf
+$(PKG)_VERSION  := 1.0.2
+$(PKG)_CHECKSUM := 5072d82ab50ec36cc8c0e320b5c377adb48abe70
 $(PKG)_SUBDIR   := mpc-$($(PKG)_VERSION)
 $(PKG)_FILE     := mpc-$($(PKG)_VERSION).tar.gz
 $(PKG)_URL      := http://www.multiprecision.org/mpc/download/$($(PKG)_FILE)
@@ -19,10 +19,7 @@ endef
 
 define $(PKG)_BUILD
     cd '$(1)' && ./configure \
-        --host='$(TARGET)' \
-        --enable-static \
-        --disable-shared \
-        --prefix='$(PREFIX)/$(TARGET)' \
+        $(MXE_CONFIGURE_OPTS) \
         --with-gmp='$(PREFIX)/$(TARGET)/' \
         --with-mpfr='$(PREFIX)/$(TARGET)/'
     $(MAKE) -C '$(1)' -j '$(JOBS)'
@@ -34,6 +31,7 @@ define $(PKG)_BUILD
     cp -R '$(1)/tests' '$(PREFIX)/$(TARGET)/bin/$(PKG)-tests'
     (printf 'date /t >  all-tests-$(PKG)-$($(PKG)_VERSION).txt\r\n'; \
      printf 'time /t >> all-tests-$(PKG)-$($(PKG)_VERSION).txt\r\n'; \
+     printf 'set PATH=..\\;%%PATH%%\r\n'; \
      printf 'for /R %%%%f in (*.exe) do %%%%f || echo %%%%f fail >> all-tests-$(PKG)-$($(PKG)_VERSION).txt\r\n';) \
      > '$(PREFIX)/$(TARGET)/bin/$(PKG)-tests/all-tests-$(PKG)-$($(PKG)_VERSION).bat'
 endef

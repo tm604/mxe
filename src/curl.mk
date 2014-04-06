@@ -3,8 +3,8 @@
 
 PKG             := curl
 $(PKG)_IGNORE   :=
-$(PKG)_VERSION  := 7.33.0
-$(PKG)_CHECKSUM := 00c4293c336a1f987cf93c9ff385c5eb865db5d0
+$(PKG)_VERSION  := 7.36.0
+$(PKG)_CHECKSUM := a82e3384a8577f508259725493923d4d8782ee63
 $(PKG)_SUBDIR   := curl-$($(PKG)_VERSION)
 $(PKG)_FILE     := curl-$($(PKG)_VERSION).tar.lzma
 $(PKG)_URL      := http://curl.haxx.se/download/$($(PKG)_FILE)
@@ -18,16 +18,14 @@ endef
 
 define $(PKG)_BUILD
     cd '$(1)' && ./configure \
-        --host='$(TARGET)' \
-        --build="`config.guess`" \
-        --disable-shared \
-        --prefix='$(PREFIX)/$(TARGET)' \
+        $(MXE_CONFIGURE_OPTS) \
         --with-gnutls \
         --with-libidn \
         --enable-sspi \
         --enable-ipv6 \
         --with-libssh2
     $(MAKE) -C '$(1)' -j '$(JOBS)' install
+    ln -sf '$(PREFIX)/$(TARGET)/bin/curl-config' '$(PREFIX)/bin/$(TARGET)-curl-config'
 
     '$(TARGET)-gcc' \
         -W -Wall -Werror -ansi -pedantic \

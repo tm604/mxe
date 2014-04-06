@@ -3,12 +3,12 @@
 
 PKG             := vmime
 $(PKG)_IGNORE   :=
-$(PKG)_VERSION  := 043c3d2
-$(PKG)_CHECKSUM := e5df22a860c8f2173667dada53eb1c997c16b401
+$(PKG)_VERSION  := 4965674
+$(PKG)_CHECKSUM := 9763765fb1b58e7459552a1dc36d0ff6ba7107a2
 $(PKG)_SUBDIR   := kisli-vmime-$($(PKG)_VERSION)
 $(PKG)_FILE     := $(PKG)-$($(PKG)_VERSION).tar.gz
 $(PKG)_URL      := https://github.com/kisli/vmime/tarball/$($(PKG)_VERSION)/$($(PKG)_FILE)
-$(PKG)_DEPS     := gcc libiconv gnutls libgsasl pthreads zlib
+$(PKG)_DEPS     := gcc gnutls libgsasl pthreads zlib
 
 define $(PKG)_UPDATE
     $(WGET) -q -O- 'https://github.com/kisli/vmime/commits/master' | \
@@ -17,6 +17,9 @@ define $(PKG)_UPDATE
 endef
 
 define $(PKG)_BUILD
+    # The following hint is probably needed for ICU:
+    # -DICU_LIBRARIES="`'$(TARGET)-pkg-config' --libs-only-l icu-i18n`"
+
     cd '$(1)' && cmake \
         -DCMAKE_TOOLCHAIN_FILE='$(CMAKE_TOOLCHAIN_FILE)' \
         -DCMAKE_AR='$(PREFIX)/bin/$(TARGET)-ar' \
@@ -29,9 +32,14 @@ define $(PKG)_BUILD
         -DVMIME_BUILD_SAMPLES=OFF \
         -DVMIME_BUILD_DOCUMENTATION=OFF \
         -DCMAKE_MODULE_PATH='$(1)/cmake' \
-        -DICU_LIBRARIES="`'$(TARGET)-pkg-config' --libs-only-l icu-i18n`" \
-        -DVMIME_CHARSETCONV_LIB_IS_ICONV=ON \
+        -DVMIME_CHARSETCONV_LIB_IS_ICONV=OFF \
         -DVMIME_CHARSETCONV_LIB_IS_ICU=OFF \
+        -DVMIME_CHARSETCONV_LIB_IS_WIN=ON \
+        -DVMIME_TLS_SUPPORT_LIB_IS_GNUTLS=ON \
+        -DVMIME_TLS_SUPPORT_LIB_IS_OPENSSL=OFF \
+        -DVMIME_SHARED_PTR_USE_CXX=ON \
+        -DCXX11_COMPILER_FLAGS=ON \
+        -C../../src/vmime-TryRunResults.cmake \
         .
 
     $(MAKE) -C '$(1)' -j '$(JOBS)'
@@ -39,7 +47,7 @@ define $(PKG)_BUILD
     $(MAKE) -C '$(1)' install
 
     $(SED) -i 's/posix/windows/g;' '$(1)/examples/example6.cpp'
-    $(TARGET)-g++ -s -o '$(1)/examples/test-vmime.exe' \
+    $(TARGET)-g++ -s -std=c++0x -o '$(1)/examples/test-vmime.exe' \
         '$(1)/examples/example6.cpp' \
         `'$(TARGET)-pkg-config' vmime --cflags --libs`
     $(INSTALL) -m755 '$(1)/examples/test-vmime.exe' '$(PREFIX)/$(TARGET)/bin/'

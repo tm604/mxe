@@ -3,8 +3,8 @@
 
 PKG             := dbus
 $(PKG)_IGNORE   :=
-$(PKG)_VERSION  := 1.7.8
-$(PKG)_CHECKSUM := 0658d55ed3c2bdcf5ca0a8699a41f1960ae1cb10
+$(PKG)_VERSION  := 1.8.0
+$(PKG)_CHECKSUM := d14ab33e92e29fa732cdff69214913832181e737
 $(PKG)_SUBDIR   := $(PKG)-$($(PKG)_VERSION)
 $(PKG)_FILE     := $(PKG)-$($(PKG)_VERSION).tar.gz
 $(PKG)_URL      := http://$(PKG).freedesktop.org/releases/$(PKG)/$($(PKG)_FILE)
@@ -19,16 +19,12 @@ endef
 
 define $(PKG)_BUILD
     cd '$(1)' && ./configure \
-        --host='$(TARGET)' \
-        --build="`config.guess`" \
-        --prefix='$(PREFIX)/$(TARGET)' \
+        $(MXE_CONFIGURE_OPTS) \
         --with-xml=expat \
         --disable-tests \
         --disable-verbose-mode \
         --disable-asserts \
-        --disable-shared \
         --disable-maintainer-mode \
-        --enable-static \
         --disable-silent-rules \
         --disable-launchd \
         --disable-doxygen-docs \
