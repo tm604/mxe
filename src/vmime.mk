@@ -3,8 +3,8 @@
 
 PKG             := vmime
 $(PKG)_IGNORE   :=
-$(PKG)_VERSION  := 4965674
-$(PKG)_CHECKSUM := 9763765fb1b58e7459552a1dc36d0ff6ba7107a2
+$(PKG)_VERSION  := 0863f50
+$(PKG)_CHECKSUM := 4ea261f3d632ee9ab19b56f5e23c8e615abd6a70
 $(PKG)_SUBDIR   := kisli-vmime-$($(PKG)_VERSION)
 $(PKG)_FILE     := $(PKG)-$($(PKG)_VERSION).tar.gz
 $(PKG)_URL      := https://github.com/kisli/vmime/tarball/$($(PKG)_VERSION)/$($(PKG)_FILE)
@@ -52,3 +52,5 @@ define $(PKG)_BUILD
         `'$(TARGET)-pkg-config' vmime --cflags --libs`
     $(INSTALL) -m755 '$(1)/examples/test-vmime.exe' '$(PREFIX)/$(TARGET)/bin/'
 endef
+
+$(PKG)_BUILD_SHARED =

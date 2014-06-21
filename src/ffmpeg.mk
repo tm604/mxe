@@ -3,13 +3,18 @@
 
 PKG             := ffmpeg
 $(PKG)_IGNORE   :=
-$(PKG)_VERSION  := 2.1.4
-$(PKG)_CHECKSUM := 99c2f7af3e6d5f4a962ae8bf627d3c53bc282fec
+$(PKG)_VERSION  := 2.2.1
+$(PKG)_CHECKSUM := c5f8d103b20cd73d329401d85ced4a014757f8b9
 $(PKG)_SUBDIR   := $(PKG)-$($(PKG)_VERSION)
 $(PKG)_FILE     := $(PKG)-$($(PKG)_VERSION).tar.bz2
 $(PKG)_URL      := http://www.ffmpeg.org/releases/$($(PKG)_FILE)
 $(PKG)_URL_2    := http://launchpad.net/ffmpeg/main/$($(PKG)_VERSION)/+download/$($(PKG)_FILE)
 $(PKG)_DEPS     := gcc bzip2 gnutls lame libass libbluray libvpx opencore-amr opus sdl speex theora vo-aacenc vo-amrwbenc vorbis x264 xvidcore yasm zlib
+
+# DO NOT ADD fdk-aac OR openssl SUPPORT.
+# Although they are free softwares, their licenses are not compatible with
+# the GPL, and we'd like to enable GPL in our default ffmpeg build.
+# See index.html#potential-legal-issues
 
 define $(PKG)_UPDATE
     $(WGET) -q -O- 'http://ffmpeg.org/releases/' | \
