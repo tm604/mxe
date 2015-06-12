@@ -24,6 +24,7 @@ define $(PKG)_CONFIGURE_OPTS
         --enable-gui \
         --disable-stl \
         --enable-threads \
+		--disable-precomp-headers \
         --disable-universal \
         --with-themes=all \
         --with-msw \
