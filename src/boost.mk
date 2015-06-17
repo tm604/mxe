@@ -41,7 +41,7 @@ define $(PKG)_BUILD
         binary-format=pe \
         link=$(if $(BUILD_STATIC),static,shared) \
         target-os=windows \
-        threadapi=posix \
+        threadapi=win32 \
         threading=multi \
         toolset=gcc-mxe \
         --layout=tagged \
@@ -62,7 +62,7 @@ define $(PKG)_BUILD
 
     # setup cmake toolchain
     $(SED) -i '/Boost_THREADAPI/d' '$(CMAKE_TOOLCHAIN_FILE)'
-    echo 'set(Boost_THREADAPI "posix")' >> '$(CMAKE_TOOLCHAIN_FILE)'
+    echo 'set(Boost_THREADAPI "win32")' >> '$(CMAKE_TOOLCHAIN_FILE)'
 
     '$(TARGET)-g++' \
         -W -Wall -Werror -ansi -U__STRICT_ANSI__ -pedantic \
