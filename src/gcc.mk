@@ -9,7 +9,7 @@ $(PKG)_SUBDIR   := gcc-$($(PKG)_VERSION)
 $(PKG)_FILE     := gcc-$($(PKG)_VERSION).tar.bz2
 $(PKG)_URL      := http://ftp.gnu.org/pub/gnu/gcc/gcc-$($(PKG)_VERSION)/$($(PKG)_FILE)
 $(PKG)_URL_2    := ftp://ftp.mirrorservice.org/sites/sourceware.org/pub/gcc/releases/gcc-$($(PKG)_VERSION)/$($(PKG)_FILE)
-$(PKG)_DEPS     := binutils gcc-gmp gcc-isl gcc-mpc gcc-mpfr mingw-w64
+$(PKG)_DEPS     := binutils gcc-gmp gcc-isl gcc-mpc gcc-mpfr mingw-w64 winpthreads
 
 define $(PKG)_UPDATE
     $(WGET) -q -O- 'http://ftp.gnu.org/gnu/gcc/?C=M;O=D' | \
@@ -36,7 +36,7 @@ define $(PKG)_CONFIGURE
         --disable-multilib \
         --without-x \
         --disable-win32-registry \
-        --enable-threads=win32 \
+        --enable-threads=posix \
         --disable-libgomp \
         --with-gmp='$(PREFIX)' \
         --with-isl='$(PREFIX)' \
